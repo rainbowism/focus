@@ -312,6 +312,7 @@ Settings :: struct {
     can_cancel_go_to_line               := true;
     copy_whole_line_without_selection   := false;
     editor_history_size                 := 128;
+    auto_surround                       := false;
 
     // TODO
     // convert_tabs_to_spaces_on_load:     false
@@ -465,6 +466,7 @@ SETTINGS :: Setting.[
     .{ "smooth_scrolling",                    .boolean },
     .{ "can_cancel_go_to_line",               .boolean },
     .{ "copy_whole_line_without_selection",   .boolean },
+    .{ "auto_surround",                       .boolean },
 
     .{ "max_entries_in_open_file_dialog",     .integer },
     .{ "tab_size",                            .integer },

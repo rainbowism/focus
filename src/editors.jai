@@ -292,15 +292,42 @@ active_editor_type_char :: (char: u32) {
             buf_len = new_len;
         }
 
-        if has_selection(cursor) {
-            selection := get_selection(cursor);
-            delete_range(buffer, selection);
-            cursor.pos = selection.start;
-        }
-        insert_char_at_offset(buffer, cursor.pos, utf8_char);
+        already_inserted: bool;
+        selection := get_selection(cursor);
+        if config.settings.auto_surround && has_selection(cursor) {
+            char_to_insert: Utf8_Char;
+            char_to_insert.bytes[1] = 1;
+            char_to_insert.count    = 1;
 
-        cursor.pos = next_char_offset(buffer.bytes, cursor.pos);
-        cursor.sel = cursor.pos;
+            if char == {
+            case #char "\"";  char_to_insert.bytes[0] = #char "\"";
+            case #char "'";   char_to_insert.bytes[0] = #char "'";
+            case #char "(";   char_to_insert.bytes[0] = #char ")";
+            case #char "<";   char_to_insert.bytes[0] = #char ">";
+            case #char "[";   char_to_insert.bytes[0] = #char "]";
+            case #char "{";   char_to_insert.bytes[0] = #char "}";
+            case;             char_to_insert.count = 0;
+            }
+            if char_to_insert.count > 0 {
+                already_inserted = true;
+                insert_char_at_offset(buffer, selection.end,   char_to_insert);
+                insert_char_at_offset(buffer, selection.start, utf8_char);
+
+                cursor.sel = selection.start;
+                cursor.pos = selection.end + 2;
+            }
+        }
+
+        if !already_inserted {
+            if has_selection(cursor) {
+                delete_range(buffer, selection);
+                cursor.pos = selection.start;
+            }
+            insert_char_at_offset(buffer, cursor.pos, utf8_char);
+
+            cursor.pos = next_char_offset(buffer.bytes, cursor.pos);
+            cursor.sel = cursor.pos;
+        }
     }
 
     if new_group then new_edit_group(buffer, editor);  // make sure selection operations have a dedicated group
