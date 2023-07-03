@@ -3,8 +3,10 @@ draw_frame :: () {
         using Colors.BACKGROUND_DARK;
         Simp.clear_render_target(r, g, b, a);
     }
+    if !is_valid(screen) || screen.w < MIN_WINDOW_WIDTH || screen.h < MIN_WINDOW_HEIGHT return;
 
     maybe_set_hot_or_active(.none, screen, .NORMAL);
+
 
     // Check whether we need to deactivate elements before drawing
     if !mouse.left.is_down || mouse.left.just_released then ui.active = .none;
@@ -31,7 +33,7 @@ draw_frame :: () {
             if !values_are_close(splitter_pos, splitter_anim.target) {
                 redraw_requested = true;
                 splitter_pos = get_animation_value(splitter_anim);  // removed the clamp because we want to close smoothly. Will this cause problems? Not sure
-            } else if editors.closing {
+            } else if editor_closing {
                 finish_closing_editor();
             }
             if editors.expanded {
@@ -340,11 +342,9 @@ draw_editor :: (editor_id: s64, main_area: Rect, footer_height: float, ui_id: Ui
 
             if !deleted_cursor {
                 // Create new cursor
-                same_clipboard, clipboard := cursors_have_the_same_clipboard(editor);
                 new_cursor := array_add(*cursors);
                 new_cursor.pos = click_offset;
                 new_cursor.sel = new_cursor.pos;
-                if same_clipboard then new_cursor.clipboard = clipboard;
 
                 main_cursor = cursors.count - 1;
                 new_cursor_just_created_using_mouse = true;

@@ -317,9 +317,10 @@ ACTIONS_COMMON :: string.[
     "reset_font_size_to_default",
     "close_current_editor",
     "close_other_editor",
+    "close_left_editor",
+    "close_right_editor",
 
     "dump_key_mappings",
-    "dump_editor_history",
 ];
 
 ACTIONS_EDITORS :: #run arrays_concat(ACTIONS_COMMON, string.[
@@ -341,6 +342,7 @@ ACTIONS_EDITORS :: #run arrays_concat(ACTIONS_COMMON, string.[
     "save",
     "save_all",
     "toggle_comment",
+    "toggle_block_comment",
     "select_line",
     "scroll_viewport_up",
     "scroll_viewport_up_fast",
@@ -360,12 +362,16 @@ ACTIONS_EDITORS :: #run arrays_concat(ACTIONS_COMMON, string.[
     "switch_to_right_editor",
     "switch_to_other_editor",
     "duplicate_editor",
+    "duplicate_editor_to_the_left",
+    "duplicate_editor_to_the_right",
     "move_editor_to_the_left",
     "move_editor_to_the_right",
     "create_new_file",
     "create_new_file_on_the_side",
     "move_to_previous_editor_history",
     "move_to_next_editor_history",
+    "move_to_previous_buffer",
+    "move_to_next_buffer",
 ]);
 
 ACTIONS_OPEN_FILE_DIALOG :: #run arrays_concat(ACTIONS_COMMON, string.[

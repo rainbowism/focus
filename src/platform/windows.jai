@@ -15,6 +15,9 @@ platform_copy_config :: (src: *Platform_Config, dst: *Platform_Config) {
 
 platform_setup :: () {
     if timeBeginPeriod(1) != TIMERR_NOERROR then log_error("Couldn't set minimum timer resolution");
+    Input.windows_draw_frame = draw_frame;
+    Input.windows_update_window_size = update_window_size;
+    Input.windows_main_context = *context;
 }
 
 platform_data_dir :: () -> string {
@@ -41,6 +44,12 @@ platform_get_centered_window_dimensions :: (open_on_biggest: bool) -> s32, s32, 
             if max_area < area {
                 monitor  = it;
                 max_area = area;
+            }
+        }
+    } else {
+        for monitors {
+            if it.primary {
+                monitor = it;
             }
         }
     }
@@ -213,6 +222,12 @@ monitor_enum_proc :: (hMonitor: HMONITOR, hdc: HDC, rect: *RECT, data: LPARAM) -
     monitor.right  = rect.right;
     monitor.bottom = rect.bottom;
 
+    monitorInfo: MONITORINFO;
+    monitorInfo.cbSize = size_of(MONITORINFO);
+
+    GetMonitorInfoW(hMonitor, *monitorInfo);
+    monitor.primary = !!(monitorInfo.dwFlags & 0x1);
+
     new_context : Context;
     push_context new_context {
         array_add(*monitors, monitor);
@@ -226,6 +241,7 @@ Monitor :: struct {
     top    : int;
     right  : int;
     bottom : int;
+    primary: bool;
 };
 
 monitors : [..] Monitor;

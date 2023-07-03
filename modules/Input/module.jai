@@ -221,8 +221,10 @@ input_per_frame_event_and_flag_update :: () {
     // Called once per frame, probably.
 
     for events_this_frame {
-        for file: it.files {
-            free(file);
+        #if OS != .WINDOWS {
+            for file: it.files {
+                free(file);
+            }
         }
         array_free(it.files);
     }

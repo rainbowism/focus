@@ -53,7 +53,7 @@ line_height_scale_percent:              120
 max_editor_width:                       -1
 can_cancel_go_to_line:                  true
 copy_whole_line_without_selection:      false
-editor_history_size:                    128
+editor_history_size:                    1024
 auto_surround:                          false
 
 
@@ -94,6 +94,9 @@ Ctrl-S                      save
 
 Alt-Minus                   move_to_previous_editor_history
 Alt-Plus                    move_to_next_editor_history
+
+Ctrl-PageUp                 move_to_previous_buffer
+Ctrl-PageDown               move_to_next_buffer
 
 Ctrl-/                      toggle_comment
 Ctrl-L                      select_line
