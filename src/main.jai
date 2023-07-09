@@ -93,6 +93,11 @@ main :: () {
         press_count := 0;
     };
 
+    // On Wayland and X11 the main window needs to be mapped before we can get input focus.
+    // Thus we force one draw here in order to ensure we start the main loop with the window
+    // in the correct state.
+    draw_frame();
+
     while !should_quit {
         if !redraw_requested platform_wait_message();
 
@@ -111,6 +116,7 @@ main :: () {
                 window_width = it.width;
                 window_height = it.height;
                 if should_reinit {
+                    // Cleanup: revisit this code, it's been touched by multiple people and needs simplification
                     screen    = make_rect(0, 0, window_width, window_height);
                     dpi_scale = platform_get_dpi_scale(window);
                     init_fonts_and_dependent_things();
@@ -129,15 +135,17 @@ main :: () {
         screen_with_title_bar.h += 200;  // should be enough to include the title bar
 
         #if OS != .WINDOWS {
-            if !Input.input_application_has_focus {
-                // Avoid changing the cursor when the window is not in Focus.
-                // This also fixes the Cmd+Tab cursor-spawning issue where the window still thinks Cmd is held down.
+            nothing_to_do_this_frame := !redraw_requested && !Input.events_this_frame.count && !mouse.moved_this_frame;
+
+            if !Input.input_application_has_focus && nothing_to_do_this_frame {
+                // Avoid changing the cursor when the window is not in Focus, but only when we don't have anything else to
+                // do this frame. This also fixes the Cmd+Tab cursor-spawning issue where the window still thinks Cmd is held down.
                 sleep_milliseconds(1);
                 continue;
             }
 
             // Try to avoid hot-looping on Linux/macOS
-            if !redraw_requested && !Input.events_this_frame.count && !mouse.moved_this_frame {
+            if nothing_to_do_this_frame {
                 sleep_milliseconds(1);
                 continue;
             }
@@ -515,6 +523,11 @@ update_window_size :: (w: s64, h: s64) {
     window_height = h;
     Simp.update_window(window);
     screen = make_rect(0, 0, window_width, window_height);
+    new_dpi_scale := platform_get_dpi_scale(window);
+    if new_dpi_scale != dpi_scale {
+        dpi_scale = new_dpi_scale;
+        init_fonts_and_dependent_things();
+    }
 }
 
 // Important directories
