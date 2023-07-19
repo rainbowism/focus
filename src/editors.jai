@@ -320,8 +320,8 @@ active_editor_type_char :: (char: u32) {
                 insert_char_at_offset(buffer, selection.end,   char_to_insert);
                 insert_char_at_offset(buffer, selection.start, utf8_char);
 
-                cursor.sel = selection.start;
-                cursor.pos = selection.end + 2;
+                cursor.sel = selection.start + 1;
+                cursor.pos = selection.end   + 1;
             }
         }
 
