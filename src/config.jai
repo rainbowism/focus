@@ -37,7 +37,7 @@ load_project_config :: (project: string = "") -> success: bool, changed: bool, t
 refresh_config :: (path: string) {
     old_workspace_dirs := array_copy_tmp(config.workspace.workspace_dirs);
 
-    if path == global_config_path {
+    if platform_path_equals(path, global_config_path) {
         success, changed, there_were_warnings := load_global_config();
         if success && changed && !there_were_warnings {
             clear_user_messages();
@@ -49,7 +49,7 @@ refresh_config :: (path: string) {
                 add_success_message(tprint("Config changes for project '%' have been applied", current_project_name), dismiss_in_seconds = 3);
             }
         }
-    } else if path == project_config_path {
+    } else if platform_path_equals(path, project_config_path) {
         success, changed, there_were_warnings := load_project_config();
         if success && changed && !there_were_warnings {
             clear_user_messages();
@@ -88,7 +88,7 @@ refresh_config :: (path: string) {
 }
 
 is_our_config_file :: (path: string) -> bool {
-    return path != "" && (path == global_config_path || path == project_config_path);
+    return path != "" && (platform_path_equals(path, global_config_path) || platform_path_equals(path, project_config_path));
 }
 
 find_font_by_name :: (name: string) -> path: string, error_msg: string /* temp */ {
@@ -171,10 +171,18 @@ load_and_merge_config :: (file_path: string, into: Config, hash: *u64) -> succes
     // Make sure the values are within the acceptable range
     clamp_warnings := false;
 
+    old_tab_size := TAB_SIZE;
     TAB_SIZE = clamp(cast(s32) config.settings.tab_size, 1, 100);  // be reasonable (though 100 is unreasonable)
     if config.settings.tab_size != TAB_SIZE {
         add_user_warning(tprint("Tab size clamped to %", TAB_SIZE));
         clamp_warnings = true;
+    }
+    if old_tab_size != TAB_SIZE {
+        // Refresh all editors which have line wrap on
+        for * editor : open_editors {
+            buffer := *open_buffers[editor.buffer_id];
+            if line_wrap_is_active(editor) then rescan_for_wrapped_lines(editor, buffer);
+        }
     }
 
     line_height_scale := config.settings.line_height_scale_percent;
@@ -329,6 +337,8 @@ Settings :: struct {
     copy_whole_line_without_selection   := false;
     editor_history_size                 := 128;
     auto_surround                       := false;
+    line_wrap_is_on_by_default          := false;
+    show_line_numbers                   := false;
 
     // TODO
     // convert_tabs_to_spaces_on_load:     false

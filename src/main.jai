@@ -1,5 +1,3 @@
-DEBUG_FILE_REFRESH :: true;
-
 main :: () {
     cpu_info = get_cpu_info();
 
@@ -398,7 +396,7 @@ init_fonts_and_dependent_things :: () {
     }
     append(*common_icons, PEN_ICON);
     append(*common_icons, XMARK_ICON);
-    icons_string := builder_to_string(*common_icons);
+    icons_string := builder_to_string(*common_icons, allocator = temp);
 
     Simp.prepare_text(font_icons,       icons_string);
     Simp.prepare_text(font_icons_tiny, icons_string);
@@ -751,8 +749,6 @@ File_Async :: #import "File_Async";
 Simp  :: #import "Simp";
 Input :: #import "Input";
 
-DEBUG :: #run get_build_options().math_bounds_check == .FATAL;  // this is a sloppy way of checking whether we're in debug mode!
-
 MAX_BUFFER_SIZE_FOR_HIGHLIGHTS :: 5 * 1024 * 1024;
 
 #scope_file
@@ -797,3 +793,5 @@ Embedded_Font :: struct {
     name: string;
     data: string;
 }
+
+DEBUG_FILE_REFRESH :: false;  // TODO: remove when done debugging

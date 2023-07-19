@@ -19,6 +19,7 @@ build :: () {
     optimized := false;
     options.output_executable_name = "focus_debug";
     set_optimization(*options, .DEBUG);
+    // options.arithmetic_overflow_check = .FATAL; Try uncommenting this line in 0.1.072. Doesn't work correctly on 0.1.071.
 
     for arg: args {
         if arg == {
@@ -29,6 +30,7 @@ build :: () {
             options.output_executable_name = "focus";
             options.array_bounds_check = .ON;
             options.null_pointer_check = .ON;
+            options.arithmetic_overflow_check = .OFF;
           case "debug";
           case;
             compiler_report(tprint("Command-line argument #%, '%', is invalid. Valid options are: 'debug', 'release'.\n", it_index+1, arg));
@@ -56,6 +58,13 @@ build :: () {
 VERSION      :: "%";
 RELEASE_DATE :: "%";
 STRING, VERSION, RELEASE_DATE), w);
+
+    // Add a debug marker
+    if optimized {
+        add_build_string("DEBUG :: false;\n", w);
+    } else {
+        add_build_string("DEBUG :: true;\n", w);
+    }
 
     while true {
         message := compiler_wait_for_message();

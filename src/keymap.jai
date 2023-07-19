@@ -157,7 +157,7 @@ key_sequence_for_action_as_string :: (action: $T) -> string /* temp */ {
         if it_index < key_sequence.count - 1  print_to_builder(*b, "  ");
     }
 
-    return builder_to_string(*b);
+    return builder_to_string(*b, allocator = temp);
 }
 
 #scope_file
@@ -312,6 +312,8 @@ ACTIONS_COMMON :: string.[
     "delete_word_right",
     "delete_word_left_no_underscore",
     "delete_word_right_no_underscore",
+    "delete_to_start_of_line",
+    "delete_to_end_of_line",
     "increase_font_size",
     "decrease_font_size",
     "reset_font_size_to_default",
@@ -330,8 +332,6 @@ ACTIONS_EDITORS :: #run arrays_concat(ACTIONS_COMMON, string.[
     "duplicate_lines",
     "delete_line_and_go_up",
     "delete_line",
-    "delete_to_start_of_line",
-    "delete_to_end_of_line",
     "move_selected_lines_up",
     "move_selected_lines_down",
     "join_lines",
@@ -373,6 +373,7 @@ ACTIONS_EDITORS :: #run arrays_concat(ACTIONS_COMMON, string.[
     "move_to_previous_buffer",
     "move_to_next_buffer",
     "toggle_line_wrap",
+    "toggle_line_numbers",
 ]);
 
 ACTIONS_OPEN_FILE_DIALOG :: #run arrays_concat(ACTIONS_COMMON, string.[
