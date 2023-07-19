@@ -55,6 +55,8 @@ can_cancel_go_to_line:                  true
 copy_whole_line_without_selection:      false
 editor_history_size:                    1024
 auto_surround:                          false
+line_wrap_is_on_by_default:             false
+show_line_numbers:                      false
 
 
 [[keymap]]

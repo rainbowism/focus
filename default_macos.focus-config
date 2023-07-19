@@ -53,6 +53,8 @@ line_height_scale_percent:              120
 max_editor_width:                       -1
 editor_history_size:                    1024
 auto_surround:                          false
+line_wrap_is_on_by_default:             false
+show_line_numbers:                      false
 
 
 [[keymap]]
