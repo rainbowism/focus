@@ -18,7 +18,7 @@ go_to_line_dialog_handle_event :: (event: Input.Event) -> handled: bool {
             new_text := to_bytes(copy_temporary_string(to_string(input.text)));
             i := 0;
             for byte : new_text {
-                if #char "0" <= byte && byte <= #char "9" {
+                if (#char "0" <= byte && byte <= #char "9") {
                     input.text[i] = byte;
                     i += 1;
                 }
@@ -41,13 +41,16 @@ go_to_line_dialog_handle_event :: (event: Input.Event) -> handled: bool {
         if #char "0" <= char && char <= #char "9" {
             text_input_type_char(*input, char);
             jump_to_line();
+        } else if relative && char == #char "-" {
+            negative = !negative;
+            jump_to_line();
         }
         return true;
     }
     return false;
 }
 
-show_go_to_line_dialog :: () {
+show_go_to_line_dialog :: (is_relative := false) {
     editor, buffer := get_active_editor_and_buffer();
     if !editor || !buffer return;
 
@@ -58,6 +61,8 @@ show_go_to_line_dialog :: () {
     // Remember cursor position
     original_cursor_position = editor.cursors[editor.main_cursor].state;
     jumped = false;
+    relative = is_relative;
+    negative = false;
 
     // Select text when opening
     input.cursor.sel = 0;
@@ -106,8 +111,13 @@ jump_to_line :: () {
         line_num += digit * n;
         n *= 10;
     }
-
-    line_num = clamp(line_num - 1, 0, get_max_real_line_num(buffer));
+    if negative  line_num = -line_num;
+    if relative {
+        line_num += offset_to_real_line(buffer, original_cursor_position.pos);
+        line_num  = clamp(line_num, 0, get_max_real_line_num(buffer));
+    } else {
+        line_num = clamp(line_num - 1, 0, get_max_real_line_num(buffer));
+    }
     line_start := get_real_line_start_offset(buffer, cast(s32)line_num);
     line_end   := get_real_line_end_offset  (buffer, cast(s32)line_num);
 
@@ -140,6 +150,8 @@ Go_To_Line_Dialog :: struct {
     scroll_to_cursor: Scroll_Mode = .no;
     original_cursor_position: Cursor.State;
     jumped := false;
+    relative := false;
+    negative := false;
 
     input: Text_Input;
 }

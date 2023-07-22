@@ -1,4 +1,7 @@
 main :: () {
+    RPM.rpmalloc_allocator_proc(.STARTUP, 0, 0, null, null);
+    context.allocator = Allocator.{RPM.rpmalloc_allocator_proc, null};
+
     cpu_info = get_cpu_info();
 
     platform_setup();
@@ -306,6 +309,7 @@ handle_common_editor_action :: (action: Action_Editors, placement: Editor_Placem
         case .open_project_config;                              editors_open_project_config(placement);             return true;
 
         case .go_to_line;                                       show_go_to_line_dialog();                           return true;
+        case .go_to_relative_line;                              show_go_to_line_dialog(is_relative = true);         return true;
         case .create_new_file;                                  editors_create_new_file(placement);                 return true;
         case .create_new_file_on_the_side;                      editors_create_new_file(.on_the_side);              return true;
 
@@ -744,6 +748,11 @@ dont_ignore_next_window_resize := false;
 // #if DEBUG {
 //     #import "Tracy";
 // }
+
+RPM :: #import "rpmalloc"(
+    ENABLE_ASSERTS = true,
+    ENABLE_STATISTICS = true
+);
 
 File_Async :: #import "File_Async";
 

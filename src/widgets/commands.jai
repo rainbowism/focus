@@ -152,6 +152,7 @@ commands := #run Command.[
     .{ .select_all,                                         "Select All",                         0, .Single },
     .{ .select_line,                                        "Select Line",                        0, .Single },
     .{ .go_to_line,                                         "Go To Line",                         0, .Single },
+    .{ .go_to_relative_line,                                "Go To Relative Line",                0, .Single },
 
     .{ .close_current_editor,                               "Close File",                         0, .Single },
     .{ .close_other_editor,                                 "Close Other File",                   0, .Double },

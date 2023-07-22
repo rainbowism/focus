@@ -52,9 +52,10 @@ tab_size:                               4
 line_height_scale_percent:              120
 max_editor_width:                       -1
 editor_history_size:                    1024
-auto_surround:                          false
 line_wrap_is_on_by_default:             false
 show_line_numbers:                      false
+auto_surround:                          false
+relative_line_numbers:                  false
 
 
 [[keymap]]
@@ -189,12 +190,14 @@ Cmd-O                       show_open_file_dialog_in_navigate_mode
 Cmd-Shift-O                 show_open_file_dialog_in_navigate_mode_from_root
 
 Cmd-G                       go_to_line
+F4                          go_to_relative_line
 
 Cmd-C                       copy
 Cmd-X                       cut
 Cmd-V                       paste
 
 Cmd-Z                       undo
+Cmd-Y                       redo
 Cmd-Shift-Z                 redo
 
 Cmd-D                       select_word

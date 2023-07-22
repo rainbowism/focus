@@ -873,42 +873,75 @@ draw_editor :: (editor_id: s64, main_area: Rect, footer_height: float, ui_id: Ui
 
         draw_rect(line_number_panel, Colors.BACKGROUND);
 
-        // Get the visible lines which have cursors on them (for highlighting)
-        active_lines: [..] s32;
-        active_lines.allocator = temp;
-        for cursor : editor.cursors {
-            if cursor.pos < visible_offset_range.start continue;
-            if cursor.pos > visible_offset_range.end   break;  // assuming the cursors are sorted
+        if config.settings.relative_line_numbers && editor.cursors.count == 1 {
+            active_line_num := offset_to_real_line(buffer, editor.cursors[0].pos);
+            y := text_origin.y + (line_height - char_x_advance) / 2 - visible_lines_start * line_height;
+            x := line_number_panel.x + line_number_panel.w - char_x_advance;
 
-            line_num := offset_to_real_line(buffer, cursor.pos);
-            array_add(*active_lines, line_num);
-        }
+            if line_wrap_is_active(editor) {
+                last_line_num := -1;
 
-        y := text_origin.y + (line_height - char_x_advance) / 2 - visible_lines_start * line_height;
-        x := line_number_panel.x + line_number_panel.w - char_x_advance;
+                for line_num : visible_lines_start .. visible_lines_end {
+                    line_start := get_line_start_offset(editor, buffer, line_num);
+                    real_line_num := offset_to_real_line(buffer, line_start);
 
-        if line_wrap_is_active(editor) {
-            last_line_num := -1;
+                    if real_line_num != last_line_num {
+                        active := active_line_num == real_line_num;
+                        width := Simp.prepare_text(font, tprint("%", ifx active then real_line_num + 1 else abs(real_line_num - active_line_num)));
+                        Simp.draw_prepared_text(font, xx (x - width), xx y, color = ifx active then Colors.UI_DEFAULT else Colors.UI_DIM);
+                        last_line_num = real_line_num;
+                    }
 
-            for line_num : visible_lines_start .. visible_lines_end {
-                line_start := get_line_start_offset(editor, buffer, line_num);
-                real_line_num := offset_to_real_line(buffer, line_start);
-
-                if real_line_num != last_line_num {
-                    active := array_find(active_lines, real_line_num);
-                    width := Simp.prepare_text(font, tprint("%", real_line_num + 1));
-                    Simp.draw_prepared_text(font, xx (x - width), xx y, color = ifx active then Colors.UI_DEFAULT else Colors.UI_DIM);
-                    last_line_num = real_line_num;
+                    y -= line_height;
                 }
-
-                y -= line_height;
+            } else {
+                for line_num : visible_lines_start .. visible_lines_end {
+                    active := active_line_num == line_num;
+                    width := Simp.prepare_text(font, tprint("%", ifx active then line_num + 1 else abs(line_num - active_line_num)));
+                    Simp.draw_prepared_text(font, xx (x - width), xx y, color = ifx active then Colors.UI_DEFAULT else Colors.UI_DIM);
+                    y -= line_height;
+                }
             }
         } else {
-            for line_num : visible_lines_start .. visible_lines_end {
-                active := array_find(active_lines, line_num);
-                width := Simp.prepare_text(font, tprint("%", line_num + 1));
-                Simp.draw_prepared_text(font, xx (x - width), xx y, color = ifx active then Colors.UI_DEFAULT else Colors.UI_DIM);
-                y -= line_height;
+            // Get the visible lines which have cursors on them (for highlighting)
+            active_lines: [..] s32;
+            active_lines.allocator = temp;
+            for cursor : editor.cursors {
+                if cursor.pos < visible_offset_range.start continue;
+                if cursor.pos > visible_offset_range.end   break;  // assuming the cursors are sorted
+
+                line_num := offset_to_real_line(buffer, cursor.pos);
+                array_add(*active_lines, line_num);
+            }
+
+            y := text_origin.y + (line_height - char_x_advance) / 2 - visible_lines_start * line_height;
+            x := line_number_panel.x + line_number_panel.w - char_x_advance;
+
+            dim_color := ifx config.settings.relative_line_numbers then Colors.UI_NEUTRAL else Colors.UI_DIM;
+
+            if line_wrap_is_active(editor) {
+                last_line_num := -1;
+
+                for line_num : visible_lines_start .. visible_lines_end {
+                    line_start := get_line_start_offset(editor, buffer, line_num);
+                    real_line_num := offset_to_real_line(buffer, line_start);
+
+                    if real_line_num != last_line_num {
+                        active := array_find(active_lines, real_line_num);
+                        width := Simp.prepare_text(font, tprint("%", real_line_num + 1));
+                        Simp.draw_prepared_text(font, xx (x - width), xx y, color = ifx active then Colors.UI_DEFAULT else dim_color);
+                        last_line_num = real_line_num;
+                    }
+
+                    y -= line_height;
+                }
+            } else {
+                for line_num : visible_lines_start .. visible_lines_end {
+                    active := array_find(active_lines, line_num);
+                    width := Simp.prepare_text(font, tprint("%", line_num + 1));
+                    Simp.draw_prepared_text(font, xx (x - width), xx y, color = ifx active then Colors.UI_DEFAULT else dim_color);
+                    y -= line_height;
+                }
             }
         }
     }
@@ -2319,7 +2352,16 @@ draw_go_to_line_dialog :: (active_editor_rect: Rect) {
     margin  := floor(8 * dpi_scale);
     padding := floor(4 * dpi_scale);
 
-    label_width := cast(float) Simp.prepare_text(font_ui, "Go to line");
+    label_width: float = ---;
+    if go_to_line_dialog.relative {
+        if go_to_line_dialog.negative {
+            label_width = cast(float) Simp.prepare_text(font_ui, "Go to relative line up");
+        } else {
+            label_width = cast(float) Simp.prepare_text(font_ui, "Go to relative line down");
+        }
+    } else {
+        label_width = cast(float) Simp.prepare_text(font_ui, "Go to line");
+    }
     width  := max(active_editor_rect.w * 0.5, 6 * char_x_advance + 2 * (margin + padding + 1));
     height := font_ui_line_height + 2 * (margin + padding + 1);
 
