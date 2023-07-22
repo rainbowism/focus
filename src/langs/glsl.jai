@@ -631,6 +631,13 @@ Keyword :: enum u16 {
     kw_flat;
     kw_noperspective;
     kw_smooth;
+    kw_layout;
+    kw_column_major;
+    kw_row_major;
+    kw_shared;
+    kw_packed;
+    kw_std140;
+    kw_std430;
 
     kwv_false;
     kwv_nullptr;
@@ -673,6 +680,7 @@ Keyword :: enum u16 {
     kwt_double;
     kwt_float;
     kwt_int;
+    kwt_uint;
     kwt_long;
     kwt_short;
     kwt_void;
@@ -683,6 +691,9 @@ Keyword :: enum u16 {
     kwt_vec2;
     kwt_vec3;
     kwt_vec4;
+    kwt_uvec2;
+    kwt_uvec3;
+    kwt_uvec4;
     kwt_mat2;
     kwt_mat3;
     kwt_mat4;
