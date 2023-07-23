@@ -461,7 +461,7 @@ draw_editor :: (editor_id: s64, main_area: Rect, footer_height: float, ui_id: Ui
 
     // Draw editor
     {
-        min_visible_chars :: 5;
+        min_visible_chars :: 8;
 
         push_scissor(rect);
         defer pop_scissor();

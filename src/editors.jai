@@ -2607,8 +2607,8 @@ Viewport :: struct {
     top:  s32;
     left: s32;
     glue_point: Glue_Point;
-    scroll_y := #run Tween_Animation(s32).{ speed = xx 0.1, func = .lerp };
-    scroll_x := #run Tween_Animation(s32).{ speed = xx 0.1, func = .lerp };
+    scroll_y := #run Tween_Animation(s32).{ speed = xx 0.075, func = .lerp };
+    scroll_x := #run Tween_Animation(s32).{ speed = xx 0.075, func = .lerp };
 
     Glue_Point :: struct { buffer_pos: s32; offset_within_line: s32; }
 }
