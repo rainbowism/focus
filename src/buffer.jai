@@ -415,8 +415,8 @@ recalculate_colors :: (buffer: *Buffer) {
         case .Jai;          highlight_jai_syntax(buffer);
         case .C;            highlight_c_syntax(buffer);
         case .CSharp;       highlight_csharp_syntax(buffer);
-        case .GLSL;         highlight_glsl_syntax(buffer);
         case .Focus_Config; highlight_focus_config_syntax(buffer);
+        case .Glsl;         highlight_glsl_syntax(buffer);
         case .Worklog;      highlight_worklog(buffer);
     }
 }
@@ -981,8 +981,8 @@ Buffer :: struct {
         Jai;
         C;
         CSharp;
-        GLSL;
         Focus_Config;
+        Glsl;
         Worklog;
     } = .Plain_Text;
 

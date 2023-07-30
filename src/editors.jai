@@ -930,7 +930,13 @@ set_lang_from_path :: (buffer: *Buffer, path: string) {
             case "jai";            buffer.lang = .Jai;
             case "focus-config";   buffer.lang = .Focus_Config;
             case "cs";             buffer.lang = .CSharp;
-            case "glsl";           buffer.lang = .GLSL;
+
+            case "vert"; #through; // NOTE: Vertex shader extension
+            case "frag"; #through; // NOTE: Fragment shader extension
+            case "geom"; #through; // NOTE: Geometry shader extension
+            case "tess"; #through; // NOTE: Tesselation shader extension (TODO: differentiate between tess control and tess eval? Not sure that's valuable though...)
+            case "glsl";
+                buffer.lang = .Glsl;
 
             case "c";   #through;
             case "h";   #through;
@@ -2345,7 +2351,7 @@ toggle_comment :: (editor: *Editor, buffer: *Buffer) {
         case .C;            comment_without_space = "//";
         case .CSharp;       comment_without_space = "//";
         case .Jai;          comment_without_space = "//";
-        case .GLSL;         comment_without_space = "//";
+        case .Glsl;         comment_without_space = "//";
         case .Focus_Config; comment_without_space = "#";
         case;               return;
     }
@@ -2441,7 +2447,7 @@ toggle_block_comment :: (editor: *Editor, buffer: *Buffer) {
         case .C;            comment_start = "/*"; comment_end = "*/";
         case .CSharp;       comment_start = "/*"; comment_end = "*/";
         case .Jai;          comment_start = "/*"; comment_end = "*/";
-        case .GLSL;         comment_start = "/*"; comment_end = "*/";
+        case .Glsl;         comment_start = "/*"; comment_end = "*/";
         case;               toggle_comment(editor, buffer); return;  // fallback to toggle_comment for the rest.
     }
 
