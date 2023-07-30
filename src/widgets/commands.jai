@@ -148,6 +148,8 @@ commands := #run Command.[
     .{ .create_new_file_on_the_side,                        "Create New File On The Side",        0, .Single },
 
     .{ .search_in_project,                                  "Search In Workspace",                0, .None },
+    .{ .search_definition_under_cursor,                     "Search Definition Under Cursor",     0, .None },
+    .{ .search_identifier_under_cursor,                     "Search Identifier Under Cursor",     0, .None },
 
     .{ .select_all,                                         "Select All",                         0, .Single },
     .{ .select_line,                                        "Select Line",                        0, .Single },

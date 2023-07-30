@@ -278,6 +278,8 @@ ACTIONS_COMMON :: string.[
     "search_in_buffer",
     "search_in_buffer_dropdown_mode",
     "search_in_project",
+    "search_definition_under_cursor",
+    "search_identifier_under_cursor",
     "go_to_line",
     "go_to_relative_line",
     "show_open_file_dialog_in_search_mode",

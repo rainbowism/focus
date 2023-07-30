@@ -81,11 +81,17 @@ finder_close :: () {
     activate_editors();
 }
 
-finder_open_from_editor :: () {
+finder_open_from_editor :: (new_text: string = "") {
     editor, buffer := get_active_editor_and_buffer();
 
     // If there was some text selected that doesn't span more than one line, use it for search
-    if editor && editor.cursors.count == 1 {
+    if new_text {
+        if new_text != to_string(finder.input.text) {
+            replace_text(*finder.input, new_text);
+            reset_results();
+            start_new_search();
+        }
+    } else if editor && editor.cursors.count == 1 {
         cursor := editor.cursors[0];
         selected_text := get_selected_string(cursor, buffer);
         if selected_text && selected_text != to_string(finder.input.text) && offset_to_line(editor, buffer, cursor.pos) == offset_to_line(editor, buffer, cursor.sel) {

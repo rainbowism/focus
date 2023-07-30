@@ -328,6 +328,32 @@ handle_common_editor_action :: (action: Action_Editors, placement: Editor_Placem
         case .move_to_next_buffer;                              move_to_next_editor_history    (by_buffer = true);  return true;
 
         // TODO: search_in_buffer
+
+        case .search_definition_under_cursor;
+            editor, buffer := get_active_editor_and_buffer();
+            if !editor || editor.cursors.count == 0 {
+                if active_global_widget == .editors then finder_open_from_editor(); else finder_open();
+                return true;
+            }
+            cursor := leave_only_original_cursor(editor);
+            get_selected_string(cursor, buffer);
+            select_word(buffer, cursor);
+            selected_text := get_selected_string(cursor, buffer);
+            text := ifx selected_text then tprint("% ::", selected_text) else "";
+            if active_global_widget == .editors then finder_open_from_editor(text); else finder_open();
+            return true;
+
+        case .search_identifier_under_cursor;
+            editor, buffer := get_active_editor_and_buffer();
+            if !editor || editor.cursors.count == 0 {
+                if active_global_widget == .editors then finder_open_from_editor(); else finder_open();
+                return true;
+            }
+            cursor := leave_only_original_cursor(editor);
+            select_word(buffer, cursor);
+            if active_global_widget == .editors then finder_open_from_editor(); else finder_open();
+            return true;
+
         case .search_in_project;
             if active_global_widget == .editors then finder_open_from_editor(); else finder_open();
             return true;

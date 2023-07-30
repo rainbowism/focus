@@ -151,6 +151,8 @@ draw_welcome_screen :: (main_area: Rect) {
             .{ .search_in_buffer,                                   "Search In Open File" },
             .{ .search_in_buffer_dropdown_mode,                     "Search In Open File (Dropdown Mode)" },
             .{ .search_in_project,                                  "Search In Workspace" },
+            .{ .search_definition_under_cursor,                     "Search Definition Under Cursor"},
+            .{ .search_identifier_under_cursor,                     "Search Identifier Under Cursor"},
         ];
 
         right_area = shrink(right_area, margin);
