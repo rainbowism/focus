@@ -159,7 +159,7 @@ parse_identifier :: (using tokenizer: *Tokenizer, token: *Token) {
     }
 
     // Check for here-string
-    if last_tokens[1].type == .compiler_directive && last_tokens[1].compiler_directive == .directive_string {
+    if last_tokens[3].type == .compiler_directive && last_tokens[3].compiler_directive == .directive_string {
         token.type = .here_string;
         end := find_index_from_left(buf, identifier_str, start_index = t - buf.data);
         if end < 0 { t = max_t; return; }
