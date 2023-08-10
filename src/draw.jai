@@ -1119,6 +1119,8 @@ draw_editor :: (editor_id: s64, main_area: Rect, footer_height: float, ui_id: Ui
                         selected_result = entry_index;
                         jump_to_search_result(editor, buffer);
                         close_search_bar(editor);
+                        redraw_requested = true;
+                        break;  // don't finish drawing entries because they are reset
                     }
                     draw_rect(entry_rect, Colors.LIST_CURSOR_LITE);
                 }
@@ -1239,7 +1241,11 @@ draw_editor :: (editor_id: s64, main_area: Rect, footer_height: float, ui_id: Ui
             coords := cursor_coords[main_cursor].pos;
             if line_wrap_is_active(editor) then coords = get_real_cursor_coords(buffer, editor.cursors[main_cursor]).pos;
 
-            width = xx Simp.prepare_text(font_ui_bold, tprint("Line: %  Col: %", coords.line + 1, coords.col + 1));
+            #if DEBUG {
+                width = xx Simp.prepare_text(font_ui_bold, tprint("Offset: %  Line: %  Col: %", editor.cursors[main_cursor].pos, coords.line + 1, coords.col + 1));
+            } else {
+                width = xx Simp.prepare_text(font_ui_bold, tprint("Line: %  Col: %", coords.line + 1, coords.col + 1));
+            }
             line_col_start_x := footer_rect.x + footer_rect.w - width;
             Simp.draw_prepared_text(font_ui_bold, xx line_col_start_x, xx pen.y, color = Colors.UI_DIM);
 

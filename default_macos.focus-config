@@ -35,9 +35,11 @@ __pycache__
 .DS_Store .dmg
 
 [[settings]]
+
 maximize_on_start:                      false
 open_on_the_biggest_monitor:            false
 cursor_as_block:                        true
+cursor_blink_time_in_seconds:           5
 highlight_selection_occurrences:        true
 disable_that_annoying_paste_effect:     false
 disable_file_open_close_animations:     false
@@ -84,6 +86,7 @@ Alt-ArrowDown               move_selected_lines_down
 Cmd-J                       join_lines
 Cmd-Shift-J                 join_lines_no_spaces_in_between
 
+Alt-Tab                     autoindent_region
 Tab                         indent_or_go_to_next_tabstop
 Shift-Tab                   unindent
 

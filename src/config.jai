@@ -1,3 +1,5 @@
+CURRENT_CONFIG_VERSION :: 2;
+
 load_global_config :: (fallback_to_default_on_failure := false) -> success: bool, changed: bool, there_were_warnings: bool {
     global_config_path = sprint("%/global.focus-config", config_dir);
 
@@ -156,7 +158,7 @@ load_and_merge_config :: (file_path: string, into: Config, hash: *u64) -> succes
     }
 
     // Maybe update hash if changed
-    new_hash := calculate_meow_hash(file_data);
+    new_hash := calculate_hash(to_bytes(file_data));
     changed := new_hash != <<hash;
     if changed then <<hash = new_hash;
 
@@ -322,6 +324,7 @@ Settings :: struct {
     maximize_on_start                   := false;
     open_on_the_biggest_monitor         := true;
     cursor_as_block                     := true;
+    cursor_blink_time_in_seconds        := 5;
     highlight_selection_occurrences     := true;
     disable_that_annoying_paste_effect  := false;
     disable_file_open_close_animations  := false;
